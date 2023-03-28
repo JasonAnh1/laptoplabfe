@@ -1,28 +1,38 @@
 <template>
   <div id="app">
-    <img alt="Vue logo" src="./assets/logo.png">
-    <HelloWorld msg="Welcome to Your Vue.js App"/>
+
+    <AdminSite v-if="this.roles =='ROLE_ADMIN'"/>
+    <UserSite v-else/> 
   </div>
+
+
 </template>
 
 <script>
-import HelloWorld from './components/HelloWorld.vue'
-
+import AdminSite from './components/AdminSite.vue';
+import UserSite from './components/UserSite.vue';
 export default {
+  computed:{
+    user(){
+      return this.$store.state.userLogined.roles[0].name;
+    }
+  },
+  data() {
+    return {
+      current: localStorage.getItem('accessToken'),
+      roles: localStorage.getItem('role'),
+    }
+  },
+  created(){
+    alert(this.roles)
+  },
   name: 'App',
-  components: {
-    HelloWorld
-  }
-}
-</script>
 
-<style>
-#app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
-  margin-top: 60px;
-}
-</style>
+  components: {
+    AdminSite,
+    UserSite
+},
+
+
+};
+</script>
