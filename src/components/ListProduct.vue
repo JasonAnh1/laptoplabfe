@@ -90,7 +90,8 @@
             </table>
         </div> <!-- card.// -->
 
-</div></template>
+</div>
+</template>
 
 <script>
     

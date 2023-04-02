@@ -203,7 +203,7 @@
                     <i class="fa fa-cog"></i>
                     <span class="badge-sonar"></span>
                 </a>
-                <a >
+                <a>
                     <i class="fa fa-power-off" v-on:click="logout"></i>
                 </a>
             </div>
@@ -213,7 +213,7 @@
             <div class="container-fluid">
                 <h2>Pro Sidebar</h2>
                 <router-view></router-view>
-     
+
                 <hr>
 
                 <footer class="text-center">
@@ -249,17 +249,19 @@
 
 export default {
     name: "AdminSite",
-    data(){
-        return{
-            zero:""
+    data() {
+        return {
+            zero: ""
         }
     },
     methods: {
-        logout(){
-        
-           localStorage.setItem('role','')
-           this.$router.push({ path: '/' })
-           window.location.reload()
+        logout() {
+            this.$store.state.userLogined = '';
+            localStorage.setItem('accessToken', '')
+            localStorage.setItem('role', '')
+            setTimeout(location.reload.bind(location), 90);
+            this.$router.push({ path: '/' })
+           
         }
     },
 
@@ -770,4 +772,5 @@ body {
 
 .chiller-theme .sidebar-footer>a:last-child {
     border-right: none;
-}</style>
+}
+</style>

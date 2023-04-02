@@ -7,7 +7,7 @@
                         <div class="col-lg-3 col-sm-4 col-md-4 col-5">
                             <router-link to="/HomeContent" class="brand-wrap">
                                 <!-- <img class="logo" src="http://ampexamples.com/data/upload/2017/08/bootstrap2_logo.png"> -->
-                                <span class="logo">Laptop LAB</span></router-link>
+                                <span class="logo">Laptop PEPE</span></router-link>
                         </div>
                         <div class="col-lg-4 col-xl-5 col-sm-8 col-md-4 d-none d-md-block">
                             <form action="#" class="search-wrap">
@@ -75,8 +75,24 @@
                                             </div>
                                         </li>
                                     </ul>
-                                </div> <span class="vl"></span> <router-link to="/LoginForm"
-                                    class="nav-link nav-user-img"><span class="login">LOGIN</span></router-link>
+                                </div>
+                                <router-link v-if="userlogined.name" to="/ShopCart" class="nav-link">
+                                    <span class="mt-2 ml-2 mr-2"><i class="fas fa-shopping-cart"></i></span></router-link>
+                                <span class="vl"> </span>
+                                <span class="login"></span>
+
+                                <!-- <router-link v-if="userlogined == null" to="/LoginForm" class="nav-link nav-user-img"><span
+                                        class="login">LOGIN</span></router-link>
+                                <router-link  v-if="userlogined == null" to="/RegisterForm" class="nav-link nav-user-img"><span
+                                        class="login">Register</span></router-link> -->
+                                <router-link v-if="!userlogined.name" to="/LoginForm" class="nav-link nav-user-img"><span
+                                        class="login">LOGIN</span></router-link>
+                                <router-link v-if="!userlogined.name" to="/RegisterForm" class="nav-link nav-user-img"><span
+                                        class="login">Register</span></router-link>
+                                <span class="login mr-3 " v-if="userlogined.name">HELLO! &nbsp; {{ userlogined.name }}
+                                </span>
+                                <a role='button' class="login " v-if="userlogined.name" v-on:click="logout">Logout</a>
+
                             </div>
                         </div>
                     </div>
@@ -94,8 +110,9 @@
                         data-target="#dropdown6" aria-expanded="false"> <span class="navbar-toggler-icon"></span> </button>
                     <div class="navbar-collapse collapse" id="dropdown6" style="">
                         <ul class="navbar-nav mr-auto">
-                            <li class="nav-item"> <a class="nav-link"  data-abc="true" v-on:click="gohome">Laptop</a> </li>
-                            <li class="nav-item"> <a class="nav-link" href="" data-abc="true">Refurbished Mobile</a> </li>
+                            <li class="nav-item"> <a class="nav-link" data-abc="true" v-on:click="gohome">Laptop</a> </li>
+                            <li class="nav-item" v-for="item in categories" :key="item.id"> <a class="nav-link"
+                                    data-abc="true" v-on:click="listBycategory(item.id)">{{ item.title }}</a> </li>
                             <li class="nav-item"> <a class="nav-link" href="" data-abc="true">Accessories & Peripheral</a>
                             </li>
                             <li class="nav-item"> <a class="nav-link" href="" data-abc="true">Blog</a> </li>
@@ -106,25 +123,57 @@
             </nav>
         </header>
         <router-view></router-view>
-        <!-- <HomeContent /> -->
+
+
 
     </div>
 </template>
 <script>
-// import BannerHome from './BannerHome.vue';
-// import HomeContent from './HomeContent.vue';
+
 export default {
-    name: 'UserSite'
-    , components: {
-        // BannerHome,
-        // HomeContent
+    name: 'UserSite',
+    computed: {
+        categories() {
+            return this.$store.state.categories;
+        },
+        userlogined() {
+            return this.$store.state.userLogined;
+        },
+    },
+    data() {
+        return {
+            page: 0,
+            productId: 0,
+            access_token: localStorage.getItem('accessToken')
+        }
     },
     methods: {
         gohome() {
+            this.$router.push({ path: '/HomeContent' })
+        },
+        listBycategory(categoryId) {
+            this.$store.dispatch('fetchListProductForUser2', { pageRequest: this.page, cateId: categoryId }
+            );
 
+        },
+        logout() {
+            this.$store.state.userLogined = '';
+            localStorage.setItem('accessToken', '')
+            localStorage.setItem('role', '')
+            setTimeout(location.reload.bind(location), 90);
             this.$router.push({ path: '/HomeContent' })
 
         }
+
+    },
+    created() {
+        this.$store.dispatch('fetchCategories');
+        this.$swal.fire({
+            title: 'Error!',
+            text: 'Do you want to continue',
+            icon: 'error',
+            confirmButtonText: 'Cool'
+        });
     },
 }
 </script>
@@ -267,4 +316,5 @@ export default {
 
 .login {
     color: white
-}</style>
+}
+</style>
