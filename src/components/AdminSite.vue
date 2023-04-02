@@ -1,28 +1,30 @@
 <template>
     <div class="page-wrapper chiller-theme toggled">
 
-        <a id="show-sidebar" class="btn btn-sm btn-dark" href="#">
-            <i class="fas fa-bars"></i>
-        </a>
-        <nav id="sidebar" class="sidebar-wrapper">
+        <nav ref="sidebaradmin" id="sidebar" class="sidebar-wrapper">
             <div class="sidebar-content">
-                <div class="sidebar-brand">
-                    <a href="#">pro sidebar</a>
-                    <div id="close-sidebar">
+                <div class="sidebar-brand" style="display: flex; justify-content: center; align-items: center;">
+                    <div v-show="!sidebar" style="cursor: pointer;" v-on:click="showsidebar()">
+                        <div class="menuicon"></div>
+                        <div class="menuicon"></div>
+                        <div class="menuicon"></div>
+                    </div>
+                    <a v-show="sidebar" href="#">Admin Site</a>
+                    <div v-show="sidebar" id="close-sidebar" v-on:click="closesidebar()">
                         <i class="fas fa-times"></i>
                     </div>
                 </div>
                 <div class="sidebar-header">
-                    <div class="user-pic">
-                        <img class="img-responsive img-rounded"
-                            src="https://raw.githubusercontent.com/azouaoui-med/pro-sidebar-template/gh-pages/src/img/user.jpg"
+                    <div style="display: flex; justify-content: center; align-items: center; text-align: center;">
+                        <img ref="imgAvatar" width="120px" height="90px" style="display: block; margin-left: auto; margin-right: auto;"
+                            :src= this.userimg
                             alt="User picture">
                     </div>
-                    <div class="user-info">
-                        <span class="user-name">Jhon
-                            <strong>Smith</strong>
+                    <div v-show="sidebar" class="user-info">
+                        <span class="user-name">
+                            <strong>{{ this.username }}</strong>
                         </span>
-                        <span class="user-role">Administrator</span>
+                        <span class="user-role">{{ this.userrole }}</span>
                         <span class="user-status">
                             <i class="fa fa-circle"></i>
                             <span>Online</span>
@@ -30,7 +32,7 @@
                     </div>
                 </div>
                 <!-- sidebar-header  -->
-                <div class="sidebar-search">
+                <div class="sidebar-search" v-show="sidebar">
                     <div>
                         <div class="input-group">
                             <input type="text" class="form-control search-menu" placeholder="Search...">
@@ -44,11 +46,11 @@
                 </div>
                 <!-- sidebar-search  -->
                 <div class="sidebar-menu">
-                    <ul>
-                        <li class="header-menu">
-                            <span>General</span>
+                    <ul style="margin-top: 5px;">
+                        <li  class="header-menu">
+                            <span v-show="sidebar">General</span>
                         </li>
-                        <li class="sidebar-dropdown">
+                        <!-- <li class="sidebar-dropdown">
                             <a href="#">
                                 <i class="fa fa-tachometer-alt"></i>
                                 <span>Dashboard</span>
@@ -157,8 +159,8 @@
                         </li>
                         <li class="header-menu">
                             <span>Extra</span>
-                        </li>
-                        <li>
+                        </li> -->
+                        <!-- <li>
                             <a href="#">
                                 <i class="fa fa-book"></i>
                                 <span>Documentation</span>
@@ -170,20 +172,25 @@
                                 <i class="fa fa-calendar"></i>
                                 <span>Calendar</span>
                             </a>
-                        </li>
+                        </li> -->
                         <li>
                             <router-link to="/LoginForm" class="nav-link">
                                 <i class="fa fa-folder"></i>
-                                <span>Login</span>
+                                <span v-show="sidebar">Login</span>
                             </router-link>
 
                         </li>
                         <li>
                             <router-link to="/ListProduct" class="nav-link">
-                                <i class="fa fa-folder"></i>
-                                <span>List Product</span>
+                                <i class="fa fa-laptop"></i>
+                                <span v-show="sidebar">List Product</span>
                             </router-link>
-
+                        </li>
+                        <li>
+                            <router-link to="/ListOrder" class="nav-link">
+                                <i class="fa fa-shopping-cart"></i>
+                                <span v-show="sidebar">List Order</span>
+                            </router-link>
                         </li>
                     </ul>
                 </div>
@@ -191,7 +198,7 @@
             </div>
             <!-- sidebar-content  -->
             <div class="sidebar-footer">
-                <a href="#">
+                <!-- <a href="#">
                     <i class="fa fa-bell"></i>
                     <span class="badge badge-pill badge-warning notification">3</span>
                 </a>
@@ -202,20 +209,19 @@
                 <a href="#">
                     <i class="fa fa-cog"></i>
                     <span class="badge-sonar"></span>
-                </a>
-                <a >
-                    <i class="fa fa-power-off" v-on:click="logout"></i>
+                </a> -->
+                <a style="float: right;" >
+                    <i class="fa fa-power-off"></i>
                 </a>
             </div>
         </nav>
         <!-- sidebar-wrapper  -->
-        <main class="page-content">
+        <main ref="pagecontent" class="page-content">
             <div class="container-fluid">
-                <h2>Pro Sidebar</h2>
+                
                 <router-view></router-view>
      
                 <hr>
-
                 <footer class="text-center">
                     <div class="mb-2">
                         <small>
@@ -245,13 +251,16 @@
 <script>
 
 
-
-
 export default {
+    
     name: "AdminSite",
     data(){
         return{
-            zero:""
+            zero:"",
+            username: localStorage.getItem('username'),
+            userrole: localStorage.getItem('role'),
+            userimg: localStorage.getItem('userimg'),
+            sidebar: true,
         }
     },
     methods: {
@@ -260,8 +269,27 @@ export default {
            localStorage.setItem('role','')
            this.$router.push({ path: '/' })
            window.location.reload()
+        },
+        closesidebar(){
+            this.sidebar = false
+            this.$refs.sidebaradmin.style.width="60px"
+            this.$refs.imgAvatar.style.width="45px"
+            this.$refs.imgAvatar.style.height="45px"
+            this.$refs.imgAvatar.style.borderRadius="50%"
+            this.$refs.pagecontent.style.paddingLeft="100px"
+        },
+        showsidebar(){
+            this.sidebar = true
+            this.$refs.sidebaradmin.style.width="260px"
+            this.$refs.imgAvatar.style.width="120px"
+            this.$refs.imgAvatar.style.height="90px"
+            this.$refs.imgAvatar.style.borderRadius="0%"
+            this.$refs.pagecontent.style.paddingLeft="300px"
         }
     },
+    computed: {
+
+    }
 
 }
 
@@ -316,6 +344,13 @@ export default {
         transform: scale(2);
         opacity: 0;
     }
+}
+
+.menuicon {
+    width: 35px;
+    height: 5px;
+    background-color: white;
+    margin: 6px 0;    
 }
 
 body {
@@ -507,7 +542,7 @@ body {
     width: 100%;
     text-decoration: none;
     position: relative;
-    padding: 8px 30px 8px 20px;
+    /* padding: 8px 30px 8px 20px; */
 }
 
 .sidebar-wrapper .sidebar-menu ul li a i {
