@@ -32,15 +32,25 @@
                     </div>
                 </div>
                 <!-- sidebar-header  -->
-                <div class="sidebar-search" v-show="sidebar">
+                <div class="sidebar-search">
                     <div>
-                        <div class="input-group">
-                            <input type="text" class="form-control search-menu" placeholder="Search...">
-                            <div class="input-group-append">
+                        <div v-if="sidebar" class="input-group">
+                            <input type="text" class="form-control search-menu" placeholder="Search..." style="width: 165px;">
+                            <!-- <div class="input-group-append">
                                 <span class="input-group-text">
                                     <i class="fa fa-search" aria-hidden="true"></i>
                                 </span>
-                            </div>
+                            </div> -->
+                            <i class="fa fa-search" aria-hidden="true" style=" z-index: 10; position: absolute; top: 30%; right: 5%; color: #525965;"></i>
+                        </div>
+                        <div class="sidebar-menu" v-else >
+                            <ul>
+                                <li>
+                                    <a>
+                                        <i class="fa fa-search" aria-hidden="true"></i>
+                                    </a>
+                                </li>
+                            </ul>
                         </div>
                     </div>
                 </div>
@@ -183,13 +193,13 @@
                         <li>
                             <router-link to="/ListProduct" class="nav-link">
                                 <i class="fa fa-laptop"></i>
-                                <span v-show="sidebar">List Product</span>
+                                <span style="display: inline-block;" v-show="sidebar">List Product</span>
                             </router-link>
                         </li>
                         <li>
                             <router-link to="/ListOrder" class="nav-link">
                                 <i class="fa fa-shopping-cart"></i>
-                                <span v-show="sidebar">List Order</span>
+                                <span style="display: inline-block;" v-show="sidebar">List Order</span>
                             </router-link>
                         </li>
                     </ul>
@@ -210,8 +220,8 @@
                     <i class="fa fa-cog"></i>
                     <span class="badge-sonar"></span>
                 </a> -->
-                <a style="float: right;" >
-                    <i class="fa fa-power-off"></i>
+                <a style="cursor: pointer;">
+                    <i class="fa fa-power-off" v-on:click="logout"></i>
                 </a>
             </div>
         </nav>
@@ -220,7 +230,7 @@
             <div class="container-fluid">
                 
                 <router-view></router-view>
-     
+
                 <hr>
                 <footer class="text-center">
                     <div class="mb-2">
@@ -265,10 +275,11 @@ export default {
     },
     methods: {
         logout(){
-        
-           localStorage.setItem('role','')
-           this.$router.push({ path: '/' })
-           window.location.reload()
+            this.$store.state.userLogined = '';
+            localStorage.setItem('accessToken', '')
+            localStorage.setItem('role', '')
+            setTimeout(location.reload.bind(location), 90);
+            this.$router.push({ path: '/' })
         },
         closesidebar(){
             this.sidebar = false
@@ -285,7 +296,7 @@ export default {
             this.$refs.imgAvatar.style.height="90px"
             this.$refs.imgAvatar.style.borderRadius="0%"
             this.$refs.pagecontent.style.paddingLeft="300px"
-        }
+        },
     },
     computed: {
 
@@ -412,7 +423,7 @@ body {
     top: 10px;
     border-radius: 0 4px 4px 0px;
     width: 35px;
-    transition-delay: 0.3s;
+    /* transition-delay: 0.3s; */
 }
 
 .page-wrapper.toggled #show-sidebar {
@@ -521,13 +532,13 @@ body {
 /*-----------------------sidebar-search------------------------*/
 
 .sidebar-wrapper .sidebar-search>div {
-    padding: 10px 20px;
+    padding: 10px 15px;
 }
 
 /*----------------------sidebar-menu-------------------------*/
 
 .sidebar-wrapper .sidebar-menu {
-    padding-bottom: 10px;
+    padding-bottom: 0px;
 }
 
 .sidebar-wrapper .sidebar-menu .header-menu span {
@@ -805,4 +816,5 @@ body {
 
 .chiller-theme .sidebar-footer>a:last-child {
     border-right: none;
-}</style>
+}
+</style>

@@ -1,8 +1,8 @@
 <template>
   <div class="LoginForm">
-    <div class="container border border-dark rounded mt-5 w-25"  @submit.prevent="handleSubmit">
+    <div class="container border border-dark rounded mt-5 w-25" >
         <h2>Login form</h2>
-        <form >
+        <form  @submit.prevent="handleSubmit">
             <div class="form-group">
                 <label for="phone">Phone:</label>
                 <input type="text" class="form-control" v-model="phone" id="phone" placeholder="Enter phone" name="phone">
@@ -47,7 +47,9 @@ export default {
           phone:this.phone,
           password:this.password
         });
-         window.location.reload()
+        // setTimeout(location.reload.bind(location), 90);
+        this.$router.push({ path: '/' })
+        //  window.location.reload()
         //  window.onload(this.$router.push({ path: '/ListProduct' }))
        
     } 

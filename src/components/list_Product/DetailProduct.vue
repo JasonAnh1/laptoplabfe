@@ -10,11 +10,12 @@
                             <input v-on:change="changePic()" style="display: block; margin-top: 5px; width: 90px;" v-show="editable==false" type="file" accept="image/*" ref="file"/>
                         </div>
                     </div>
-                    <div class="form-group" style="float: right; width: 45%; margin-left: 5%; margin-bottom: 0;">
-                        <label for="description" class="label">Description</label>
+                    <div class="form-group" style="float: right; width: 45%; margin-left: 5%; margin-bottom: 0; height: 200px;">
+                        <!-- <label for="description" class="label">Description</label>
                         <div class="controls">
                             <textarea ref="prodDescription" :disabled="editable==true" v-model=productInfo.description id="description" name="description" aria-label="Description" style="height: 165px; width: 100%;"></textarea>
-                        </div>
+                        </div> -->
+                        <VueEditor ref="prodDescription" :disabled="editable==true" v-model=productInfo.description :editorToolbar="customToolbar" style="color: black;"></VueEditor>
                     </div>
                     <div class="form-group textbox boxright" style="margin-top: 5px;">
                         <label for="name" class="label">Name</label>
@@ -100,8 +101,12 @@
 </template>
 
 <script>
+import { VueEditor } from "vue2-editor";
 
 export default {
+    components: {
+        VueEditor
+    },
     data() {
         return {
             toggle: false,
@@ -109,6 +114,21 @@ export default {
             imageFile: this.item.imageUrl,
             productInfo: null,
             product: new Object(),
+            customToolbar: [
+                [{ header: [false, 1, 2, 3, 4, 5, 6] }],
+                ["bold", "italic", "underline", "strike"],
+                [
+                    { align: "" },
+                    { align: "center" },
+                    { align: "right" },
+                    { align: "justify" }
+                ],
+                [{ list: "ordered" }, { list: "bullet" }, { list: "check" }],
+                [{ indent: "-1" }, { indent: "+1" }],
+                [{ color: [] }, { background: [] }],
+                ["link", "video"],
+                ["clean"] 
+            ]
         }
     },
     mounted() {
