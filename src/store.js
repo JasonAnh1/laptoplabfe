@@ -16,7 +16,9 @@ export const store = new Vuex.Store({
 
         cart: [],
 
-        province: []
+        province: [],
+        district: [],
+        commune: []
     },
     getters: {
 
@@ -59,6 +61,12 @@ export const store = new Vuex.Store({
         },
         getProvince(state, pv) {
             state.province = pv;
+        },
+        getDistrict(state, dt) {
+            state.district = dt;
+        },
+        getCommune(state, cm) {
+            state.commune = cm;
         }
     },
 
@@ -121,6 +129,18 @@ export const store = new Vuex.Store({
             const response = await axios.get('https://api.mysupership.vn/v1/partner/areas/province');
 
             context.commit('getProvince', response.data.results)
+        },
+        async fetchDistrict(context, code) {
+            const response = await axios.get('https://api.mysupership.vn/v1/partner/areas/district',
+                { params: { province: code } });
+
+            context.commit('getDistrict', response.data.results)
+        },
+        async fetchCommune(context, code) {
+            const response = await axios.get('https://api.mysupership.vn/v1/partner/areas/commune',
+                { params: { district: code } });
+
+            context.commit('getCommune', response.data.results)
         }
     }
 

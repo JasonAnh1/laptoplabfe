@@ -261,7 +261,7 @@ export default {
             localStorage.setItem('role', '')
             setTimeout(location.reload.bind(location), 90);
             this.$router.push({ path: '/' })
-           
+
         }
     },
 

@@ -168,12 +168,7 @@ export default {
     },
     created() {
         this.$store.dispatch('fetchCategories');
-        this.$swal.fire({
-            title: 'Error!',
-            text: 'Do you want to continue',
-            icon: 'error',
-            confirmButtonText: 'Cool'
-        });
+       
     },
 }
 </script>
