@@ -3,6 +3,7 @@ import Vuex from "vuex";
 
 Vue.use(Vuex);
 import axios from "axios";
+import Swal from 'sweetalert2'
 export const store = new Vuex.Store({
     state:{
         userLogined:{
@@ -22,8 +23,14 @@ export const store = new Vuex.Store({
         listProductForUser: [],
         detailProduct: {},
         cart: [],
+        listOrder:[],
         province: [],
-        listOrder:[]
+        district: [],
+        commune: [],
+
+        totalProduct: 0,
+        curPageAdmin: 1,
+        strSearchAdmin: "",
 
     },
     getters: {
@@ -40,6 +47,7 @@ export const store = new Vuex.Store({
             localStorage.setItem('role',state.userLogined.roles[0].name)
             localStorage.setItem('username',state.userLogined.name);
             localStorage.setItem('userimg',state.userLogined.imageUrl);
+            localStorage.setItem('ownerId',state.userLogined.id);
         },
         getListProduct(state, lstProduct) {
             state.listProduct = lstProduct;
@@ -77,8 +85,22 @@ export const store = new Vuex.Store({
         getListOrder(state, lstOrder) {
             state.listOrder = lstOrder;
         },
+        getDistrict(state, dt) {
+            state.district = dt;
+        },
+        getCommune(state, cm) {
+            state.commune = cm;
+        },
+        getTotalProduct(state, tp) {
+            state.totalProduct = tp;
+        },
+        getCurPageAdmin(state, page) {
+            state.curPageAdmin = page;
+        },
+        getStrSearchAdmin(state, str) {
+            state.strSearchAdmin = str
+        },
     },
-
     actions: {
         async fetchLogin(context, phone, password) {
             const response = await axios.post('api/v1/auth/signin',
@@ -86,12 +108,12 @@ export const store = new Vuex.Store({
 
             context.commit('loginServer', response.data);
         }
-        , async fetchListProduct(context, pageRequest) {
+        , async fetchListProduct(context) {
             const response = await axios.get('api/v1/product/get', {
-                params: { page: pageRequest }
+                params: { page: context.state.curPageAdmin-1, name: context.state.strSearchAdmin }
             });
-            console.log(response.data.body);
             context.commit('getListProduct', response.data.body);
+            context.commit('getTotalProduct', response.data.totalRecord);
         },
         async fetchListProductForUser(context, pageRequest) {
             var response;
@@ -131,14 +153,34 @@ export const store = new Vuex.Store({
             const response = await axios.get('https://api.mysupership.vn/v1/partner/areas/province');
 
             context.commit('getProvince', response.data.results)
+        },
+        async fetchDistrict(context, code) {
+            const response = await axios.get('https://api.mysupership.vn/v1/partner/areas/district',
+                { params: { province: code } });
+
+            context.commit('getDistrict', response.data.results)
+        },
+        async fetchCommune(context, code) {
+            const response = await axios.get('https://api.mysupership.vn/v1/partner/areas/commune',
+                { params: { district: code } });
+
+            context.commit('getCommune', response.data.results)
         }
         ,async fetchDeleteProduct(context,payload){
             const response = await axios.get('api/v1/product/delete',{
-                params:{id:payload.id}
+                params:{id:payload}
             });
             console.log(response.data.body);
-            this.dispatch('fetchListProduct',payload.page);
-            window.alert("Xóa thành công")
+
+            context.commit('getCurPageAdmin',1)
+            context.commit('getStrSearchAdmin',"")
+
+            this.dispatch('fetchListProduct');
+            Swal.fire(
+                'Deleted!',
+                'Product has been deleted.',
+                'success'
+              )
         }
         ,async fetchListSupplier(context){
             const response = await axios.get('api/supplier/get');
@@ -168,18 +210,34 @@ export const store = new Vuex.Store({
                 }
               });
             console.log(response.data.body);
-            this.dispatch('fetchListProduct',0);
-            window.alert("Thêm thành công")
+
+            context.commit('getCurPageAdmin',1)
+            context.commit('getStrSearchAdmin',"")
+
+            this.dispatch('fetchListProduct');
+            Swal.fire({
+                icon: 'success',
+                title: 'Success',
+                text: 'Product added successfully!',
+              });
         }
-        ,async fetchUpdateProductNoImg(context,product){
-            const response = await axios.post('api/admin/v1/product/update',product, {
+        ,async fetchUpdateProductNoImg(context,payload){
+            const response = await axios.post('api/admin/v1/product/update',payload, {
                 headers: {
                     'Authorization': localStorage.getItem('accessToken')
                 }
               });
             console.log(response.data.body);
-            this.dispatch('fetchListProduct',0);
-            window.alert("Cập nhập thành công")
+
+            context.commit('getCurPageAdmin',1)
+            context.commit('getStrSearchAdmin',"")
+
+            this.dispatch('fetchListProduct');
+            Swal.fire({
+                icon: 'success',
+                title: 'Success',
+                text: 'Product updated successfully!',
+              });
         }
         ,async fetchUpdateProductWithImg(context,payload){
             const responseImg = await axios.post('api/v1/file/upload-image',payload.img, {
@@ -194,8 +252,16 @@ export const store = new Vuex.Store({
                 }
               });
             console.log(response.data.body);
-            this.dispatch('fetchListProduct',0);
-            window.alert("Cập nhập thành công")
+
+            context.commit('getCurPageAdmin',1)
+            context.commit('getStrSearchAdmin',"")
+
+            this.dispatch('fetchListProduct');
+            Swal.fire({
+                icon: 'success',
+                title: 'Success',
+                text: 'Product updated successfully!',
+              });
         }
         ,async fetchListOrder(context){
             const response = await axios.get('api/admin/v1/order/get', {
@@ -214,10 +280,15 @@ export const store = new Vuex.Store({
               });
             console.log(response.data.body);
             this.dispatch('fetchListOrder');
+            Swal.fire({
+                icon: 'success',
+                title: 'Success',
+                text: 'Order updated successfully!',
+              });
         }
+
+        
     }
-
-
 
 
 })

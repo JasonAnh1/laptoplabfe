@@ -15,7 +15,7 @@
                         <div class="controls">
                             <textarea ref="prodDescription" :disabled="editable==true" v-model=productInfo.description id="description" name="description" aria-label="Description" style="height: 165px; width: 100%;"></textarea>
                         </div> -->
-                        <VueEditor ref="prodDescription" :disabled="editable==true" v-model=productInfo.description :editorToolbar="customToolbar" style="color: black;"></VueEditor>
+                        <VueEditor ref="prodDescription" :disabled="editable==true" v-model=productInfo.description :editorToolbar="customToolbar" style="color: black; height: 120px;"></VueEditor>
                     </div>
                     <div class="form-group textbox boxright" style="margin-top: 5px;">
                         <label for="name" class="label">Name</label>
@@ -102,6 +102,7 @@
 
 <script>
 import { VueEditor } from "vue2-editor";
+import Swal from 'sweetalert2'
 
 export default {
     components: {
@@ -177,18 +178,22 @@ export default {
                     this.product.rating>=0&&this.product.supplier_id>=0&&this.product.location_id>=0&&this.product.sold>=0) {
                         if(this.$refs.file.files[0]==null) {
                             this.product.mediaId=this.item.mediaId
-                            this.$store.dispatch('fetchUpdateProductNoImg',this.product);
+                            this.$store.dispatch('fetchUpdateProductNoImg', this.product);
                         } else {
                             this.$store.dispatch('fetchUpdateProductWithImg',{'img': formData,  'product': this.product});
                         }
                         this.toggle = false; 
                     } else {
-                window.alert("Vui lòng nhập các trường bắt buộc")
+                        Swal.fire(
+                        'Warning',
+                        'Please fill all fields correctly!',
+                        'warning'
+                        )
             }
         },
         closeDetail: function(){
             this.toggle = false; 
-            this.$store.dispatch('fetchListProduct',0);
+            this.$store.dispatch('fetchListProduct');
         },
         changePic: function(){
             this.imageFile = URL.createObjectURL(this.$refs.file.files[0])

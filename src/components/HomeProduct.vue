@@ -34,9 +34,11 @@
 
             </div>
             <small class="text-muted key pl-3">Standard key Features</small>
-            <div class="mx-3 mt-3 mb-2"><button type="button" class="btn btn-danger btn-block" v-on:click="addToCart(item.id)"><small>ADD TO
+            <div class="mx-3 mt-3 mb-2"><button type="button" class="btn btn-danger btn-block"
+                v-on:click="addToCart(item.id)"><small>ADD TO
                   CART</small></button></div>
-                  <div class="mx-3 mt-3 mb-2"><button type="button" class="btn btn-danger btn-block" v-on:click="test"><small>Test</small></button></div>
+            <div class="mx-3 mt-3 mb-2"><button type="button" class="btn btn-danger btn-block"
+                v-on:click="test"><small>Test</small></button></div>
             <div class="mx-3 mt-3 mb-2"><button type="button" class="btn btn-info btn-block"
                 v-on:click="getDetailProductById(item.id)"><small>DETAIL</small></button></div>
             <small class="d-flex justify-content-center text-muted">*Legal Disclaimer</small>
@@ -66,7 +68,7 @@ export default {
   },
   created() {
     this.$store.dispatch('fetchListProductForUser', 0);
-  
+
   },
   methods: {
     getDetailProductById(productId) {
@@ -78,16 +80,65 @@ export default {
     ,
     addToCart(ProductId) {
       let products = [];
+      let checkProduct;
+      let pd = this.$store.state.listProductForUser.find(x => x.id === ProductId)
       if (localStorage.getItem('cart')) {
         products = JSON.parse(localStorage.getItem('cart'));
+        checkProduct = products.find(x => x.id === ProductId)
       }
-      let pd = this.$store.state.listProductForUser.find(x => x.id === ProductId)
-      products.push(pd);
-      localStorage.setItem('cart', JSON.stringify(products));
-      
+      if (checkProduct || pd.remain < 1) {
+        if (checkProduct) {
+
+          let flag = true;
+          for (var i in products) {
+            if (products[i].id == ProductId) {
+
+              products[i].quantity = products[i].quantity + 1;
+              if (products[i].quantity > products[i].remain) {
+                flag = false
+              }
+              break;
+            }
+          }
+          if (flag) {
+            localStorage.setItem('cart', JSON.stringify(products));
+            this.$swal.fire({
+              icon: 'success',
+              title: 'Yes',
+              text: 'Add to cart success!',
+              footer: '<a href="">Go to cart?</a>'
+            });
+          } else {
+            this.$swal.fire({
+              icon: 'error',
+              title: 'Oh no',
+              text: 'Not enough!',
+              footer: '<a href="">Go to cart?</a>'
+            });
+          }
+
+        }
+        if (pd.remain < 1) {
+          this.$swal.fire({
+            icon: 'error',
+            title: 'Oh no',
+            text: 'Product not in stock!',
+            footer: '<a href="">Go to cart?</a>'
+          });
+        }
+      }
+      else {
+        products.push(pd);
+        localStorage.setItem('cart', JSON.stringify(products));
+        this.$swal.fire({
+          icon: 'success',
+          title: 'Yes',
+          text: 'Add to cart success!',
+          footer: '<a href="">Go to cart?</a>'
+        });
+      }
     },
-    test()
-    {
+    test() {
       localStorage.removeItem("cart")
     }
   }

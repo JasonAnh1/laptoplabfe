@@ -3,12 +3,12 @@
 
     <AdminSite v-if="this.roles == 'ROLE_ADMIN'" />
     <UserSite v-else />
-    <UnderFooter />
+    <!-- <UnderFooter /> -->
   </div>
 </template>
 
 <script>
-import UnderFooter from './components/UnderFooter.vue';
+// import UnderFooter from './components/UnderFooter.vue';
 import AdminSite from './components/AdminSite.vue';
 import UserSite from './components/UserSite.vue';
 export default {
@@ -31,7 +31,7 @@ export default {
   components: {
     AdminSite,
     UserSite,
-    UnderFooter
+    // UnderFooter
   },
 
 

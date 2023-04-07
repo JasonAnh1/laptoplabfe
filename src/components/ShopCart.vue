@@ -72,34 +72,67 @@
                                             aria-describedby="helpId" :placeholder="userlogined.phone">
                                     </div>
                                     <div class="row no-gutters">
-                                        <div class="col-sm-6 pr-sm-2">
+                                        <div class="col-sm-4 ">
                                             <div class="form-group">
-                                                <label for="NAME" class="small text-muted mb-1">VALID THROUGH</label>
                                                 <div class="btn-group">
-                                                    <button type="button" class="btn btn-primary">Primary</button>
+                                                    <button type="button" class="btn btn-primary">Thành Phố</button>
+                                                    <button type="button"
+                                                        class="btn btn-primary dropdown-toggle dropdown-toggle-split"
+                                                        data-toggle="dropdown">
+                                                    </button>
+                                                    <div class="dropdown-menu scrollable-menu" v-on:change="onChange($event)" role="menu">
+                                                        <a class="dropdown-item" v-for="item in provinces"
+                                                            v-bind:key="item.code" v-on:click="getDistricts(item.code)">{{
+                                                                item.name }}</a>
+
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                        </div>
+                                        <div class="col-sm-4">
+                                            <div class="form-group">
+                                                <div class="btn-group">
+                                                    <button type="button" class="btn btn-primary">Quận/Huyện</button>
                                                     <button type="button"
                                                         class="btn btn-primary dropdown-toggle dropdown-toggle-split"
                                                         data-toggle="dropdown">
                                                     </button>
                                                     <div class="dropdown-menu scrollable-menu" role="menu">
-                                                        <a class="dropdown-item" href="#" v-for="item in provinces" v-bind:key="item.code">{{item.name}}</a>
-                                                      
+                                                        <a class="dropdown-item" v-for="item in district"
+                                                            v-bind:key="item.code" v-on:click="getCommunes(item.code)">{{
+                                                                item.name }}</a>
+
                                                     </div>
                                                 </div>
                                             </div>
                                         </div>
-                                        <div class="col-sm-6">
+                                        <div class="col-sm-3">
                                             <div class="form-group">
-                                                <label for="NAME" class="small text-muted mb-1">CVC CODE</label>
-                                                <input type="text" class="form-control form-control-sm" name="NAME"
-                                                    id="NAME" aria-describedby="helpId" placeholder="183">
+                                                <div class="btn-group">
+                                                    <button type="button" class="btn btn-primary">Phường/Xã</button>
+                                                    <button type="button"
+                                                        class="btn btn-primary dropdown-toggle dropdown-toggle-split"
+                                                        data-toggle="dropdown">
+                                                    </button>
+                                                    <div class="dropdown-menu scrollable-menu" role="menu">
+                                                        <a class="dropdown-item" v-for="item in communes"
+                                                            v-bind:key="item.code" v-on:click="getFullAddress(item.province,item.district,item.name)">{{
+                                                                item.name }}</a>
+
+                                                    </div>
+                                                </div>
                                             </div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col">
+                                          Address:  <span>{{ address }}</span>
                                         </div>
                                     </div>
                                     <div class="row mb-md-5">
                                         <div class="col">
-                                            <button type="button" name="" id="" class="btn  btn-lg btn-block ">PURCHASE $37
-                                                SEK</button>
+                                            <button type="button" name="" id="" class="btn  btn-lg btn-block ">PURCHASE {{ totalPrice }} VND</button>
                                         </div>
                                     </div>
                                 </div>
@@ -123,12 +156,13 @@
                                                     <div class="row ">
                                                         <div class="col">
                                                             <p class="mb-0"><b>{{ item.title }}</b></p><small
-                                                                class="text-muted">2 Week Subscription</small>
+                                                                class="">quantity: {{ item.quantity }}</small>
                                                         </div>
                                                     </div>
                                                 </div>
                                             </div>
                                         </div>
+
                                         <div class="pl-0 flex-sm-col col-auto  my-auto">
                                             <button class="btn btn-danger"
                                                 v-on:click="removeItemFormCart(item.id)">Remove</button>
@@ -192,6 +226,12 @@ export default {
         },
         provinces() {
             return this.$store.state.province;
+        },
+        district() {
+            return this.$store.state.district;
+        },
+        communes() {
+            return this.$store.state.commune;
         }
     },
     data() {
@@ -200,7 +240,9 @@ export default {
             totalPrice: JSON.parse(localStorage.getItem('cart')).reduce((accumulator, object) => {
                 return accumulator + object.priceAfterDiscount;
             }, 0),
-            province: []
+            province: [],
+            address:'',
+
         }
     },
     methods: {
@@ -219,6 +261,20 @@ export default {
                 return accumulator + object.priceAfterDiscount;
             }, 0)
         },
+        getDistricts(code) {
+            this.$store.dispatch('fetchDistrict', code);
+        },
+        getCommunes(code) {
+            this.$store.dispatch('fetchCommune', code);
+            this.txtDistrict = name;
+        },
+        getFullAddress(province,district,commune) {
+            this.address = province+' - '+district+' - '+commune;
+            console.log(this.address);
+        },
+        onChange(event) {
+              console.log(event.target.value);
+          }
 
 
     },
@@ -236,6 +292,7 @@ export default {
     max-height: 200px;
     overflow-x: hidden;
 }
+
 .shop {
     font-size: 10px;
 }

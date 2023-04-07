@@ -7,6 +7,8 @@ import ListOrder from './components/list_Order/ListOrder.vue'
 import DetailProduct from './components/DetailProduct.vue'
 import RegisterForm from './components/RegisterForm.vue'
 import ShopCart from './components/ShopCart.vue'
+import ListBanner from './components/list_Banner/ListBanner.vue'
+
 Vue.use(Router)
 
 export default new Router({ 
@@ -17,6 +19,7 @@ export default new Router({
         { path: '/DetailProduct', component: DetailProduct },
         { path: '/RegisterForm', component: RegisterForm },
         { path: '/ShopCart', component: ShopCart },
-        {path: '/ListOrder', component: ListOrder},
+        { path: '/ListOrder', component: ListOrder },
+        { path: '/ListBanner', component: ListBanner },
     ]
 })

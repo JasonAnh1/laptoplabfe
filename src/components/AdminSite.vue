@@ -184,22 +184,28 @@
                             </a>
                         </li> -->
                         <li>
-                            <router-link to="/LoginForm" class="nav-link">
+                            <router-link to="/LoginForm" class="nav-link" style="position: relative;">
                                 <i class="fa fa-folder"></i>
-                                <span v-show="sidebar">Login</span>
+                                <span class="DelaySideBar">Login</span>
                             </router-link>
 
                         </li>
                         <li>
-                            <router-link to="/ListProduct" class="nav-link">
+                            <router-link to="/ListProduct" class="nav-link" style="position: relative;">
                                 <i class="fa fa-laptop"></i>
-                                <span style="display: inline-block;" v-show="sidebar">List Product</span>
+                                <span class="DelaySideBar">List Product</span>
                             </router-link>
                         </li>
                         <li>
-                            <router-link to="/ListOrder" class="nav-link">
+                            <router-link to="/ListOrder" class="nav-link" style="position: relative;">
                                 <i class="fa fa-shopping-cart"></i>
-                                <span style="display: inline-block;" v-show="sidebar">List Order</span>
+                                <span class="DelaySideBar">List Order</span>
+                            </router-link>
+                        </li>
+                        <li>
+                            <router-link to="/ListBanner" class="nav-link" style="position: relative;">
+                                <i class="fa fa-object-group"></i>
+                                <span class="DelaySideBar">List Banner</span>
                             </router-link>
                         </li>
                     </ul>
@@ -231,7 +237,7 @@
                 
                 <router-view></router-view>
 
-                <hr>
+                <!-- <hr>
                 <footer class="text-center">
                     <div class="mb-2">
                         <small>
@@ -251,7 +257,7 @@
                                 src="https://img.shields.io/twitter/follow/azouaoui_med?label=twitter&style=social" />
                         </a>
                     </div>
-                </footer>
+                </footer> -->
             </div>
         </main>
         <!-- page-content" -->
@@ -288,6 +294,13 @@ export default {
             this.$refs.imgAvatar.style.height="45px"
             this.$refs.imgAvatar.style.borderRadius="50%"
             this.$refs.pagecontent.style.paddingLeft="100px"
+
+
+            const boxes = document.querySelectorAll('.DelaySideBar');
+            boxes.forEach(box => {
+            box.style.transitionDelay="0s";
+            box.style.visibility="hidden";
+            });
         },
         showsidebar(){
             this.sidebar = true
@@ -296,13 +309,15 @@ export default {
             this.$refs.imgAvatar.style.height="90px"
             this.$refs.imgAvatar.style.borderRadius="0%"
             this.$refs.pagecontent.style.paddingLeft="300px"
+
+            const boxes = document.querySelectorAll('.DelaySideBar');
+            boxes.forEach(box => {
+            box.style.transitionDelay="0.2s";
+            box.style.visibility="visible";
+            });
         },
-    },
-    computed: {
-
+        }
     }
-
-}
 
 
 </script>
@@ -355,6 +370,15 @@ export default {
         transform: scale(2);
         opacity: 0;
     }
+}
+
+.DelaySideBar {
+    display: inline-block;
+    position: absolute;
+    top: 12px;
+    left: 60px;
+    font-size: 16px;
+    text-transform: capitalize;
 }
 
 .menuicon {

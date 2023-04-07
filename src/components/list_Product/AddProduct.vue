@@ -1,6 +1,6 @@
 <template>
     <div style="display: inline-block;">
-        <button class="btn btn-primary" href="#" role="button" v-on:click="restAll()">Add Product</button>
+        <button class="btn btn-primary" href="#" role="button" v-on:click="restAll()" style="position: absolute; right: 3px; top: 0;">Add Product</button>
         <div v-if="toggle" class="popup">
             <div class="popup-inner">
                 <form id="result-form" class="form-vertical">
@@ -11,10 +11,11 @@
                         </div>
                     </div>
                     <div class="form-group" style="float: right; width: 45%; margin-left: 5%; margin-bottom: 0;">
-                        <label for="description" class="label">Description</label>
+                        <!-- <label for="description" class="label">Description</label>
                         <div class="controls">
                             <textarea ref="prodDescription" id="description" name="description" aria-label="Description" style="height: 165px; width: 100%;"></textarea>
-                        </div>
+                        </div> -->
+                        <VueEditor v-model="prodDescription" :editorToolbar="customToolbar" style="color: black; height: 120px;"></VueEditor>
                     </div>
                     <div class="form-group textbox boxright" style="margin-top: 5px;">
                         <label for="name" class="label">Name</label>
@@ -99,12 +100,36 @@
 </template>
 
 <script>
+import { VueEditor } from "vue2-editor";
+import Swal from 'sweetalert2'
     export default {
+        props: {
+            orderInfo: Object,
+        },
+        components: {
+        VueEditor
+        },
         data() {
             return {
                 toggle: false,
                 imageFile: null,
                 product: new Object(),
+                customToolbar: [
+                [{ header: [false, 1, 2, 3, 4, 5, 6] }],
+                ["bold", "italic", "underline", "strike"],
+                [
+                    { align: "" },
+                    { align: "center" },
+                    { align: "right" },
+                    { align: "justify" }
+                ],
+                [{ list: "ordered" }, { list: "bullet" }, { list: "check" }],
+                [{ indent: "-1" }, { indent: "+1" }],
+                [{ color: [] }, { background: [] }],
+                ["link", "video"],
+                ["clean"] 
+                ],
+                prodDescription: "",
             }
         },
         mounted() {
@@ -127,13 +152,14 @@
             restAll: function() {
                 this.toggle = true; 
                 this.imageFile = null;
+                this.prodDescription = "";
             },
             addProduct: function(){
                 var formData = new FormData();
                 formData.append('file', this.$refs.file.files[0]);
                 this.product = new Object({
                         title: this.$refs.prodName.value,
-                        description: this.$refs.prodDescription.value,
+                        description: this.prodDescription,
                         price: parseFloat(this.$refs.prodPrice.value),
                         priceAfterDiscount: parseFloat(this.$refs.prodPriceDiscount.value),
                         categoryId: parseInt(this.$refs.prodCategory.value),
@@ -143,17 +169,21 @@
                         location_id: parseInt(this.$refs.prodLocation.value),
                         sold: parseInt(this.$refs.prodSold.value)
                     })
-                if (this.product.title.length>0&&this.product.description.length>0&&this.product.price>=0&&this.product.priceAfterDiscount>=0&&this.product.categoryId>=0&&this.product.remain>=0&&
+                if (this.product.title.length>0&&this.product.price>=0&&this.product.description.length>0&&this.product.priceAfterDiscount>=0&&this.product.categoryId>=0&&this.product.remain>=0&&
                         this.product.rating>=0&&this.product.supplier_id>=0&&this.product.location_id>=0&&this.product.sold>=0&&this.$refs.file.files[0]!=null) {
-                            this.$store.dispatch('fetchAddProduct',{ 'img': formData,  'product': this.product, 'check': true});
+                            this.$store.dispatch('fetchAddProduct',{ 'img': formData,  'product': this.product});
                             this.toggle = false; 
                 } else {
-                    window.alert("Vui lòng nhập các trường bắt buộc")
+                    Swal.fire(
+                        'Warning',
+                        'Please fill all fields correctly!',
+                        'warning'
+                        )
                 }
             },
             closeDetail: function(){
                 this.toggle = false; 
-                this.$store.dispatch('fetchListProduct',0);
+                this.$store.dispatch('fetchListProduct');
             },
             changePic: function(){
                 this.imageFile = URL.createObjectURL(this.$refs.file.files[0])
