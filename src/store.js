@@ -18,7 +18,9 @@ export const store = new Vuex.Store({
 
         province: [],
         district: [],
-        commune: []
+        commune: [],
+        
+        banner:[]
     },
     getters: {
 
@@ -67,6 +69,9 @@ export const store = new Vuex.Store({
         },
         getCommune(state, cm) {
             state.commune = cm;
+        },
+        getBanners(state,bn){
+            state.banner = bn;
         }
     },
 
@@ -121,7 +126,7 @@ export const store = new Vuex.Store({
         async fetchRegister(context, phone, password, email, name) {
             const response = await axios.post('api/v1/auth/signup',
                 phone, password, email, name);
-
+            
             context.commit('register', response.data.body);
 
         },
@@ -141,7 +146,14 @@ export const store = new Vuex.Store({
                 { params: { district: code } });
 
             context.commit('getCommune', response.data.results)
+        },
+        async fetchBanner(context){
+            const response = await axios.get('api/v1/banner/get',
+            { params: { type: 'PRODUCT' } });
+
+        context.commit('getBanners', response.data.body)
         }
+       
     }
 
 

@@ -1,5 +1,5 @@
 <template>
-    <div id="map2" class="basemap"></div>
+    <div id="map1" class="basemap"></div>
 </template>
   
 <script>

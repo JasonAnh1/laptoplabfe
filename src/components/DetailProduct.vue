@@ -37,7 +37,7 @@
                             <span class="size" >{{ detailProduct.supplier.title }}</span>
                         </h5>
                         <div class="action">
-                            <button class="add-to-cart btn btn-default" type="button">add to cart</button>
+                            <button class="add-to-cart btn btn-default" type="button" v-on:click="addToCart( detailProduct.id)">add to cart</button>
                             <button class="like btn btn-default" type="button"><span class="fa fa-heart"></span></button>
                         </div>
                     </div>
@@ -59,6 +59,68 @@ export default {
             return this.$store.state.detailProduct;
         }
     },
+    methods:{
+        addToCart(ProductId) {
+      let products = [];
+      let checkProduct;
+      let pd = this.$store.state.listProductForUser.find(x => x.id === ProductId)
+      if (localStorage.getItem('cart')) {
+        products = JSON.parse(localStorage.getItem('cart'));
+        checkProduct = products.find(x => x.id === ProductId)
+      }
+      if (checkProduct || pd.remain < 1) {
+        if (checkProduct) {
+
+          let flag = true;
+          for (var i in products) {
+            if (products[i].id == ProductId) {
+
+              products[i].quantity = products[i].quantity + 1;
+              if (products[i].quantity > products[i].remain) {
+                flag = false
+              }
+              break;
+            }
+          }
+          if (flag) {
+            localStorage.setItem('cart', JSON.stringify(products));
+            this.$swal.fire({
+              icon: 'success',
+              title: 'Yes',
+              text: 'Add to cart success!',
+              footer: '<a href="">Go to cart?</a>'
+            });
+          } else {
+            this.$swal.fire({
+              icon: 'error',
+              title: 'Oh no',
+              text: 'Not enough!',
+              footer: '<a href="">Go to cart?</a>'
+            });
+          }
+
+        }
+        if (pd.remain < 1) {
+          this.$swal.fire({
+            icon: 'error',
+            title: 'Oh no',
+            text: 'Product not in stock!',
+            footer: '<a href="">Go to cart?</a>'
+          });
+        }
+      }
+      else {
+        products.push(pd);
+        localStorage.setItem('cart', JSON.stringify(products));
+        this.$swal.fire({
+          icon: 'success',
+          title: 'Yes',
+          text: 'Add to cart success!',
+          footer: '<a href="">Go to cart?</a>'
+        });
+      }
+    },
+    }
 
 }
 </script>

@@ -168,7 +168,7 @@ export default {
     },
     created() {
         this.$store.dispatch('fetchCategories');
-       
+       this.$store.dispatch('fetchBanner')
     },
 }
 </script>

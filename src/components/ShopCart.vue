@@ -64,12 +64,13 @@
                                     <div class="form-group">
                                         <label for="NAME" class="small text-muted mb-1">Name</label>
                                         <input type="text" class="form-control form-control-sm" name="NAME" id="NAME"
-                                            aria-describedby="helpId" :placeholder="userlogined.name">
+                                            aria-describedby="helpId" :placeholder="userlogined.name"
+                                            :value="userlogined.name">
                                     </div>
                                     <div class="form-group">
                                         <label for="NAME" class="small text-muted mb-1">Phone Number</label>
                                         <input type="text" class="form-control form-control-sm" name="NAME" id="NAME"
-                                            aria-describedby="helpId" :placeholder="userlogined.phone">
+                                            aria-describedby="helpId" :value="userlogined.phone">
                                     </div>
                                     <div class="row no-gutters">
                                         <div class="col-sm-4 ">
@@ -80,7 +81,8 @@
                                                         class="btn btn-primary dropdown-toggle dropdown-toggle-split"
                                                         data-toggle="dropdown">
                                                     </button>
-                                                    <div class="dropdown-menu scrollable-menu" v-on:change="onChange($event)" role="menu">
+                                                    <div class="dropdown-menu scrollable-menu"
+                                                        v-on:change="onChange($event)" role="menu">
                                                         <a class="dropdown-item" v-for="item in provinces"
                                                             v-bind:key="item.code" v-on:click="getDistricts(item.code)">{{
                                                                 item.name }}</a>
@@ -117,7 +119,8 @@
                                                     </button>
                                                     <div class="dropdown-menu scrollable-menu" role="menu">
                                                         <a class="dropdown-item" v-for="item in communes"
-                                                            v-bind:key="item.code" v-on:click="getFullAddress(item.province,item.district,item.name)">{{
+                                                            v-bind:key="item.code"
+                                                            v-on:click="getFullAddress(item.province, item.district, item.name)">{{
                                                                 item.name }}</a>
 
                                                     </div>
@@ -127,12 +130,14 @@
                                     </div>
                                     <div class="row">
                                         <div class="col">
-                                          Address:  <span>{{ address }}</span>
+                                            Address: <span>{{ address }}</span>
                                         </div>
                                     </div>
                                     <div class="row mb-md-5">
                                         <div class="col">
-                                            <button type="button" name="" id="" class="btn  btn-lg btn-block ">PURCHASE {{ totalPrice }} VND</button>
+                                            <button type="button" name="" id="" class="btn  btn-lg btn-block " v-on:click="fetchPlaceOrder(userlogined.phone, userlogined.name,
+                                                1, totalPrice, address, listItemInCart)">PURCHASE {{
+        totalPrice }} VND</button>
                                         </div>
                                     </div>
                                 </div>
@@ -216,7 +221,7 @@
     </div>
 </template>
 <script>
-
+import axios from "axios";
 export default {
 
     name: 'ShopCart',
@@ -241,7 +246,7 @@ export default {
                 return accumulator + object.priceAfterDiscount;
             }, 0),
             province: [],
-            address:'',
+            address: '',
 
         }
     },
@@ -268,14 +273,42 @@ export default {
             this.$store.dispatch('fetchCommune', code);
             this.txtDistrict = name;
         },
-        getFullAddress(province,district,commune) {
-            this.address = province+' - '+district+' - '+commune;
+        getFullAddress(province, district, commune) {
+            this.address = province + ' - ' + district + ' - ' + commune;
             console.log(this.address);
         },
         onChange(event) {
-              console.log(event.target.value);
-          }
+            console.log(event.target.value);
+        },
+        async fetchPlaceOrder(phone, userName, owner_id, total_price, address, products) {
+            const response = await axios.post('api/v1/order/add',
 
+                { phone, userName, owner_id, total_price, address, products });
+
+            if (response.data.body.id) {
+                this.$swal.fire({
+                    icon: 'success',
+                    title: 'Yes',
+                    text: 'Order success!',
+                    footer: '<a href="">Go to main </a>'
+                });
+
+                localStorage.setItem('cart','')
+                this.address = ''
+                this.totalPrice = ''
+
+            }else{
+                this.$swal.fire({
+                    icon: 'error',
+                    title: 'Oh no!!',
+                    text: 'Order fail!',
+                    footer: '<a href="">Try again? </a>'
+                });
+            }
+
+
+
+        },
 
     },
     created() {
